@@ -2,7 +2,7 @@ name: Grok Bot Galaxy Autonomous Watcher
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '0 */2 * * *' # Pārbauda un izpilda ik pēc 2 stundām
   workflow_dispatch:
 
 jobs:
@@ -25,4 +25,4 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
-        run: python scripts/autonomous_watcher.py
+        run: python autonomous_watcher.py
