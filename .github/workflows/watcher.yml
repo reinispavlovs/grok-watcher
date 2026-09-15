@@ -25,4 +25,8 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
+<<<<<<< HEAD
         run: python scripts/autonomous_watcher.py
+=======
+        run: python scripts/autonomous_watcher.py
+>>>>>>> 53d212b6b2591ed16fe427f4aa5fb337a67dfd95
