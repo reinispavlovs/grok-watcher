@@ -1,6 +1,14 @@
 import os
+import sys
 import requests
 import json
+
+# Pievienojam saknes mapi ceļam, lai varētu ielādēt parallax_model.py no saknes
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(current_dir)
+sys.path.append(root_dir)
+
+import parallax_model
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
@@ -8,29 +16,28 @@ AI_API_KEY = os.getenv("AI_API_KEY")
 
 def fetch_live_updates():
     """
-    Solis 1: Datu uztveres modulis no publiskajām plūsmām / xAI avotiem.
+    Solis 1: Datu uztveres modulis, izmantojot Project Parallax modeli.
     """
-    print("Skenēju jaunākos datus no pasākuma plūsmas...")
-    
-    # Šeit skripts reālā izpildē lasa jaunākos datus
-    simulated_update = {
-        "event_title": "Grok Bot Galaxy - Day 1",
-        "action": "Autonomas arhitektūras un datu bāzes struktūras veidošana no baltas lapas",
-        "tools_used": ["Python", "Multi-agent routing"]
-    }
-    return simulated_update
+    print("Skenēju un ielādēju Parallax zināšanu dzinēja moduļus...")
+    engine = parallax_model.PARALLAX_KNOWLEDGE_ENGINE
+    return engine
 
-def adapt_to_user_ecosystem(data):
+def adapt_to_user_ecosystem(engine_data):
     """
-    Solis 2: AI adaptācijas dzinējs. 
-    Pielāgo Musk komandas soļus tavām sistēmām (Project Parallax un treidinga skeneriem).
+    Solis 2: AI adaptācijas dzinējs, kas strukturē datus priekš myparallax.org.
     """
-    print("Pielāgoju arhitektūru taviem projektiem...")
+    print("Pielāgoju arhitektūru Project Parallax mērķiem...")
+    
+    metadata = engine_data["project_metadata"]
+    modules = engine_data["modules"]
+    
+    # Apkopojam moduļu mērķus un metodoloģiju
+    modules_summary = "\n".join([f"• *{m['name']}*: {m['practical_goal']}" for m in modules])
     
     analysis = {
-        "summary": data["action"],
-        "parallax_integration": "Izmantot šo multi-aģentu shēmu, lai automatizētu datu vākšanu un sintēzi myparallax.org pētījumiem.",
-        "trading_integration": "Pielāgot šo validācijas loģiku mūsu momentum treidinga filtru automātiskai testēšanai.",
+        "summary": metadata["core_objective"],
+        "modules_text": modules_summary,
+        "parallax_integration": "Dati un fenomenoloģiskie pētījumi tiek gatavoti myparallax.org matricas un mapped % celšanai.",
     }
     return analysis
 
@@ -56,11 +63,11 @@ if __name__ == "__main__":
     adapted_result = adapt_to_user_ecosystem(raw_data)
     
     telegram_message = (
-        "🚀 *Autonomā aģenta ziņojums: Grok Bot Galaxy*\n\n"
-        f"📌 *Aktuālais solis:* {adapted_result['summary']}\n\n"
-        f"🌌 *Project Parallax virziens:* {adapted_result['parallax_integration']}\n\n"
-        f"📈 *Treidinga sistēmas virziens:* {adapted_result['trading_integration']}\n\n"
-        "_Sistēma turpina fonā uzraudzīt nākamos soļus._"
+        "🚀 *Project Parallax — Autonomais Dzinējs*\n\n"
+        f"📌 *Pamatuzdevums:*\n{adapted_result['summary']}\n\n"
+        f"🌌 *Aktīvie Parallax moduļi un mērķi:*\n{adapted_result['modules_text']}\n\n"
+        f"📈 *Platformas integrācija:* {adapted_result['parallax_integration']}\n\n"
+        "_Sistēma veiksmīgi ielādējusi Parallax arhitektūru un gatava fonu analīzei._"
     )
     
     print(telegram_message)
