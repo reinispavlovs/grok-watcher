@@ -23,7 +23,6 @@ def analyze_and_filter_noise(targets):
     if not AI_API_KEY:
         return "Kļūda: Nav atrasta AI_API_KEY GitHub Secrets."
 
-    # Izmantojam pareizo galapunktu, kas norādīts tavā strādājošajā projektā
     url = "https://api.x.ai/v1/responses"
     headers = {
         "Content-Type": "application/json",
@@ -36,17 +35,16 @@ def analyze_and_filter_noise(targets):
         f"kas uzlabotu mūsu platformu ('{metadata['name']}', mērķis: {metadata['core_objective']})."
     )
     
-    # Izmantojam Grok 4.6 modeli, kā redzams tavā konsolē
     payload = {
         "model": "grok-4.6",
         "input": prompt
     }
     
     try:
-        response = requests.post(url, json=payload, headers=headers, timeout=30)
+        # Palielinām taimautu līdz 90 sekundēm, lai Grok 4.6 paspēj apstrādāt pieprasījumu
+        response = requests.post(url, json=payload, headers=headers, timeout=90)
         if response.status_code == 200:
             result_json = response.json()
-            # Pielāgojam atbildes nolasīšanu atbilstoši responses galapunktam
             if "output" in result_json:
                 return result_json["output"]
             elif "choices" in result_json:
