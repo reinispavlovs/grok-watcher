@@ -3,7 +3,6 @@ import sys
 import requests
 import json
 
-# Pievienojam saknes mapi ceļam, lai varētu ielādēt parallax_model.py
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(current_dir)
 sys.path.append(root_dir)
@@ -15,38 +14,15 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 AI_API_KEY = os.getenv("AI_API_KEY")
 
 def watch_and_extract_sources():
-    """
-    1. SOLIS: SKATĪTIES (Watch)
-    Skenē un apkopo datus no mērķa avotiem (X un YouTube straumēm/atklātajiem datiem).
-    """
-    print("Skatos X un YouTube plūsmas...")
-    
-    # Šeit skripts definē mērķa avotus, kurus tas uzrauga
-    monitored_targets = {
-        "x_channels": ["xAI", "Elon Musk updates", "Autonomous systems engineering"],
-        "youtube_sources": ["Latest technical keynotes", "Live development streams"]
-    }
-    return monitored_targets
+    return {"status": "scanning"}
 
 def analyze_and_filter_noise(targets):
-    """
-    2. SOLIS: ANALIZĒT (Analyze & Filter)
-    Izmanto AI, lai izfiltrētu mārketinga troksni un atrastu tīru tehnisko kodolu.
-    """
-    print("Analizēju datus un filtrēju troksni caur AI...")
-    
     engine = parallax_model.PARALLAX_KNOWLEDGE_ENGINE
     metadata = engine["project_metadata"]
     
     if not AI_API_KEY:
-        return {
-            "source": "X & YouTube (Simulated Fallback)",
-            "noise_filtered": "Notīrīti mārketinga saukļi un tukšas ziņas.",
-            "core_insight": "Atrasti jauni multi-aģentu maršrutēšanas un datu strukturēšanas principi.",
-            "adaptation": f"Sagatavots integrācijai {metadata['name']} platformā."
-        }
+        return "Kļūda: Nav atrasta AI_API_KEY GitHub Secrets."
 
-    # AI API vaicājums reālai filtrēšanai un analīzei
     url = "https://api.x.ai/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {AI_API_KEY}",
@@ -54,10 +30,9 @@ def analyze_and_filter_noise(targets):
     }
     
     prompt = (
-        f"Tu esi Project Parallax autonomais izlūkošanas aģents. Tavs mērķis ir analizēt jaunāko informāciju no X un YouTube avotiem par xAI un autonomajām sistēmām. "
-        "Atmet visu mārketinga troksni, tukšas runas un virspusējas ziņas. Izvelc vienu konkrētu, dziļu tehnisko vai arhitektūras kodolu, "
-        f"kas palīdzētu mums uzlabot mūsu platformu ('{metadata['name']}', mērķis: {metadata['core_objective']}). "
-        "Atbildi strukturēti."
+        f"Tu esi Project Parallax autonomais izlūkošanas aģents. Tavs mērķis ir analizēt jaunāko informāciju par xAI un autonomajām sistēmām. "
+        "Atmet visu mārketinga troksni un izvelc vienu konkrētu tehnisko kodolu, "
+        f"kas uzlabotu mūsu platformu ('{metadata['name']}', mērķis: {metadata['core_objective']})."
     )
     
     payload = {
@@ -68,34 +43,20 @@ def analyze_and_filter_noise(targets):
     
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=30)
+        # Ja atbilde ir veiksmīga
         if response.status_code == 200:
             result_json = response.json()
-            ai_content = result_json["choices"][0]["message"]["content"]
-            return {
-                "source": "X & YouTube Live Feeds",
-                "noise_filtered": "Mārketinga troksnis veiksmīgi izsijāts. Saglabāts tikai tehniskais kodols.",
-                "core_insight": ai_content,
-                "adaptation": f"Pielāgots un sagatavots {metadata['name']} matricas uzlabošanai un mapped % celšanai."
-            }
+            return result_json["choices"][0]["message"]["content"]
+        else:
+            # Atgriezīsim precīzu statusa kodu un tekstu, lai redzētu problēmu
+            return f"API Kļūda (Status {response.status_code}): {response.text}"
+            
     except Exception as e:
-        print(f"Kļūda AI vaicājumā: {e}")
-        
-    return {
-        "source": "X & YouTube (Fallback)",
-        "noise_filtered": "Troksnis izfiltrēts lokālajā režīmā.",
-        "core_insight": "Sistēma konstatējusi jaunas arhitektūras tendences datu strukturēšanā.",
-        "adaptation": f"Integrēts {metadata['name']} struktūrā."
-    }
+        return f"Izņēmuma kļūda savienojumā: {str(e)}"
 
 def send_telegram_alert(message):
-    """
-    3. SOLIS: AUTONOMI DUBLĒT / PIEGĀDĀT (Execute & Deliver)
-    Piegādā gatavo rezumē uz Telegram.
-    """
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        print("Telegram atslēgas nav iestatītas.")
         return
-        
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
@@ -106,15 +67,11 @@ def send_telegram_alert(message):
 
 if __name__ == "__main__":
     targets = watch_and_extract_sources()
-    result = analyze_and_filter_noise(targets)
+    ai_result = analyze_and_filter_noise(targets)
     
     telegram_message = (
-        "🎯 *Project Parallax — Autonomais Rezumē*\n\n"
-        f"📡 *Avoti:* {result['source']}\n"
-        f"🛡️ *Trokšņa filtrēšana:* _{result['noise_filtered']}_\n\n"
-        f"⚙️ *Izvilktais kodols (Analīze):*\n{result['core_insight']}\n\n"
-        f"🌌 *Parallax adaptācija:*\n{result['adaptation']}\n\n"
-        "_Visi trīs cikla posmi (Skatīties -> Analizēt -> Adaptēt) izpildīti veiksmīgi._"
+        "🎯 *Project Parallax — Live Watcher Rezultāts*\n\n"
+        f"{ai_result}"
     )
     
     print(telegram_message)
