@@ -23,10 +23,11 @@ def analyze_and_filter_noise(targets):
     if not AI_API_KEY:
         return "Kļūda: Nav atrasta AI_API_KEY GitHub Secrets."
 
-    url = "https://api.x.ai/v1/chat/completions"
+    # Izmantojam pareizo galapunktu, kas norādīts tavā strādājošajā projektā
+    url = "https://api.x.ai/v1/responses"
     headers = {
-        "Authorization": f"Bearer {AI_API_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {AI_API_KEY}"
     }
     
     prompt = (
@@ -35,20 +36,24 @@ def analyze_and_filter_noise(targets):
         f"kas uzlabotu mūsu platformu ('{metadata['name']}', mērķis: {metadata['core_objective']})."
     )
     
+    # Izmantojam Grok 4.6 modeli, kā redzams tavā konsolē
     payload = {
-        "model": "grok-beta",
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.5
+        "model": "grok-4.6",
+        "input": prompt
     }
     
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=30)
-        # Ja atbilde ir veiksmīga
         if response.status_code == 200:
             result_json = response.json()
-            return result_json["choices"][0]["message"]["content"]
+            # Pielāgojam atbildes nolasīšanu atbilstoši responses galapunktam
+            if "output" in result_json:
+                return result_json["output"]
+            elif "choices" in result_json:
+                return result_json["choices"][0]["message"]["content"]
+            else:
+                return str(result_json)
         else:
-            # Atgriezīsim precīzu statusa kodu un tekstu, lai redzētu problēmu
             return f"API Kļūda (Status {response.status_code}): {response.text}"
             
     except Exception as e:
@@ -70,7 +75,7 @@ if __name__ == "__main__":
     ai_result = analyze_and_filter_noise(targets)
     
     telegram_message = (
-        "🎯 *Project Parallax — Live Watcher Rezultāts*\n\n"
+        "🚀 *Project Parallax — Grok 4.6 Live Watcher*\n\n"
         f"{ai_result}"
     )
     
