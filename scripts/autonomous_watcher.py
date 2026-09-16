@@ -8,22 +8,20 @@ root_dir = os.path.dirname(current_dir)
 sys.path.append(root_dir)
 
 import parallax_model
+import parallax_graph_engine
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 AI_API_KEY = os.getenv("AI_API_KEY")
 
-def watch_and_extract_sources():
-    return {"status": "scanning"}
-
-def analyze_and_filter_noise(targets):
-    engine = parallax_model.PARALLAX_KNOWLEDGE_ENGINE
-    metadata = engine["project_metadata"]
-    
+def analyze_and_extract_triples():
+    """
+    Izmanto Grok 4.6, lai analizētu avotus un izvilktu strukturētus trijniekus,
+    novēršot mārketinga troksni.
+    """
     if not AI_API_KEY:
         return "Kļūda: Nav atrasta AI_API_KEY GitHub Secrets."
 
-    # Oficiālais un stabilais xAI galapunkts
     url = "https://api.x.ai/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {AI_API_KEY}",
@@ -31,27 +29,25 @@ def analyze_and_filter_noise(targets):
     }
     
     prompt = (
-        f"Tu esi Project Parallax autonomais izlūkošanas aģents. Tavs mērķis ir analizēt jaunāko informāciju par xAI un autonomajām sistēmām. "
-        "Atmet visu mārketinga troksni un izvelc vienu konkrētu tehnisko kodolu, "
-        f"kas uzlabotu mūsu platformu ('{metadata['name']}', mērķis: {metadata['core_objective']})."
+        "Tu esi Project Parallax autonomais zināšanu grafa ekstrakcijas aģents. "
+        "Analizē jaunākos datus par xAI un autonomajām sistēmām. "
+        "Atmet visu mārketinga troksni. Atgriez datus formātā: "
+        "Subjekts | Relācija | Objekts | Slānis (module_1_lost_engineering / module_2_precession_and_cycles / module_3_clinical_consciousness / cosmic_isomorphism)"
     )
     
-    # Izmantojam tavu Grok 4.6 modeli
     payload = {
         "model": "grok-4.6",
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.5
+        "temperature": 0.3
     }
     
     try:
-        # Palielinām taimautu līdz 120 sekundēm, jo spriešanas modelim var būt nepieciešams ilgāks laiks
         response = requests.post(url, json=payload, headers=headers, timeout=120)
         if response.status_code == 200:
             result_json = response.json()
             return result_json["choices"][0]["message"]["content"]
         else:
             return f"API Kļūda (Status {response.status_code}): {response.text}"
-            
     except Exception as e:
         return f"Izņēmuma kļūda savienojumā: {str(e)}"
 
@@ -67,12 +63,25 @@ def send_telegram_alert(message):
     requests.post(url, json=payload)
 
 if __name__ == "__main__":
-    targets = watch_and_extract_sources()
-    ai_result = analyze_and_filter_noise(targets)
+    # Inicializējam zināšanu grafa dzinēju
+    engine = parallax_graph_engine.ParallaxGraphEngine()
+    
+    # Pievienojam bāzes dzinēja testa trijnieku vai dinamiski iegūtos datus
+    engine.add_triple("Project_Watcher", "EXTRACTS_VIA", "Grok_4.6", "cosmic_isomorphism", "GitHub_Action", 0.95)
+    
+    # Iegūstam datus caur AI
+    ai_extraction = analyze_and_extract_triples()
+    
+    # Aprēķinām pašreizējo matricas mapped %
+    current_mapped = engine.calculate_mapped_percentage()
+    graph_state = engine.export_graph_state()
     
     telegram_message = (
-        "🚀 *Project Parallax — Grok 4.6 Live Watcher*\n\n"
-        f"{ai_result}"
+        "🧠 *Project Parallax — Knowledge Graph Watcher*\n\n"
+        f"📊 *Pašreizējais Mapped Coverage:* `{current_mapped}%`\n"
+        f"🔗 *Kopējie trijnieki grafa matricā:* {graph_state['total_triples']}\n"
+        f"⚠️ *Saglabātās pretrunas (konflikti):* {graph_state['total_contradictions']}\n\n"
+        f"⚙️ *Grok 4.6 Ekstrakcijas kodols:*\n{ai_extraction}"
     )
     
     print(telegram_message)

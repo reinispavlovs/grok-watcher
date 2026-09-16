@@ -2,9 +2,9 @@
 # PROJECT PARALLAX - KNOWLEDGE ENGINE MODEL
 # ==========================================
 # Autors: Reinis Pavlovs / Project Parallax
-# Apraksts: Pilns datu modelis un aģentu instrukcijas autonomajai 
-#          sistēmai, kas integrē senās inženierijas, ciklu, NDE/OBE 
-#          un izomorfisma datus praktiskā platformas struktūrā.
+# Apraksts: Pilns datu modelis, zināšanu grafa ontoloģija un aģentu 
+#          instrukcijas autonomajai sistēmai, kas integrē senās inženierijas, 
+#          ciklu, NDE/OBE un izomorfisma datus strukturētā matricā.
 
 PARALLAX_KNOWLEDGE_ENGINE = {
     "project_metadata": {
@@ -13,7 +13,7 @@ PARALLAX_KNOWLEDGE_ENGINE = {
         "core_objective": (
             "Apvienot zudušās megalītiskās inženierijas, cikliskā katastrofisma, "
             "klīniskās apziņas (NDE/OBE) un kosmiskā izomorfisma datus vienotā "
-            "strukturētā matricā, ceļot lapas mapped % un nodrošinot reālu "
+            "strukturētā zināšanu grafā, ceļot lapas mapped % un nodrošinot reālu "
             "pētniecisko un praktisko kopsaucēju sintēzi."
         )
     },
@@ -64,6 +64,25 @@ PARALLAX_KNOWLEDGE_ENGINE = {
         }
     ],
 
+    # Jaunais zināšanu grafa un trijnieku ekstrakcijas slānis (Knowledge Graph & Ontology)
+    "knowledge_graph_schema": {
+        "extraction_directive": (
+            "No X un YouTube straumēm ekstraktēt tikai striktus trijniekus formātā: "
+            "(Subject, Relation, Object, Layer, Source, Confidence). "
+            "Atmest mārketinga troksni. Pretrunas saglabāt kā atsevišķus mezglus ar avota metadatiem."
+        ),
+        "ontology_relations": {
+            "module_1_lost_engineering": ["BUILT_BEFORE", "RESONATES_AT", "EXHIBITS_TOLERANCE", "INTERFACES_WITH"],
+            "module_2_precession_and_cycles": ["CORRELATES_WITH", "TRIGGERS_COLLAPSE_OF", "RECURS_EVERY", "DATING_ANCHOR"],
+            "module_3_clinical_consciousness": ["OPERATES_OUTSIDE", "MATCHES_STATE_OF", "PROVEN_BY_METRIC", "NON_LOCAL_EXCHANGE"],
+            "cosmic_isomorphism": ["ISOMORPHIC_TO", "SHARES_TOPOLOGY_WITH", "SCALE_INVARIANT_BY", "FRACTAL_MAPPING"]
+        },
+        "metrics": {
+            "target_metric": "mapped_percentage",
+            "calculation_basis": "unique_entities_and_cross_layer_isomorphisms"
+        }
+    },
+
     "agent_roles": {
         "data_researcher": {
             "title": "Datu pētnieks",
@@ -77,7 +96,8 @@ PARALLAX_KNOWLEDGE_ENGINE = {
             "title": "Struktūras arhitekts",
             "directive": (
                 "Integrē iegūtos datus tieši myparallax.org HTML struktūrā un matricas "
-                "noslodzes (% mapped) prasībās, nodrošinot loģisku sakarību starp moduļiem."
+                "noslodzes (% mapped) prasībās, nodrošinot loģisku sakarību starp moduļiem "
+                "un zināšanu grafa trijniekiem."
             )
         },
         "synthesis_editor": {
@@ -93,10 +113,11 @@ PARALLAX_KNOWLEDGE_ENGINE = {
     "execution_rules": {
         "avoid_dogmatic_rejection": True,
         "enforce_systemic_analysis": True,
-        "target_output": "Practical insights and website matrix expansion"
+        "target_output": "Practical insights, knowledge graph expansion and website matrix expansion"
     }
 }
 
 if __name__ == "__main__":
     print(f"Loaded: {PARALLAX_KNOWLEDGE_ENGINE['project_metadata']['name']}")
     print(f"Active Modules: {len(PARALLAX_KNOWLEDGE_ENGINE['modules'])}")
+    print(f"Ontology Layers Active: {list(PARALLAX_KNOWLEDGE_ENGINE['knowledge_graph_schema']['ontology_relations'].keys())}")
