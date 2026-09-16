@@ -23,10 +23,11 @@ def analyze_and_filter_noise(targets):
     if not AI_API_KEY:
         return "Kļūda: Nav atrasta AI_API_KEY GitHub Secrets."
 
-    url = "https://api.x.ai/v1/responses"
+    # Pareizais un stabils xAI API galapunkts
+    url = "https://api.x.ai/v1/chat/completions"
     headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {AI_API_KEY}"
+        "Authorization": f"Bearer {AI_API_KEY}",
+        "Content-Type": "application/json"
     }
     
     prompt = (
@@ -36,21 +37,16 @@ def analyze_and_filter_noise(targets):
     )
     
     payload = {
-        "model": "grok-4.6",
-        "input": prompt
+        "model": "grok-2",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.5
     }
     
     try:
-        # Palielinām taimautu līdz 90 sekundēm, lai Grok 4.6 paspēj apstrādāt pieprasījumu
-        response = requests.post(url, json=payload, headers=headers, timeout=90)
+        response = requests.post(url, json=payload, headers=headers, timeout=45)
         if response.status_code == 200:
             result_json = response.json()
-            if "output" in result_json:
-                return result_json["output"]
-            elif "choices" in result_json:
-                return result_json["choices"][0]["message"]["content"]
-            else:
-                return str(result_json)
+            return result_json["choices"][0]["message"]["content"]
         else:
             return f"API Kļūda (Status {response.status_code}): {response.text}"
             
@@ -73,7 +69,7 @@ if __name__ == "__main__":
     ai_result = analyze_and_filter_noise(targets)
     
     telegram_message = (
-        "🚀 *Project Parallax — Grok 4.6 Live Watcher*\n\n"
+        "🚀 *Project Parallax — Live Watcher Rezultāts*\n\n"
         f"{ai_result}"
     )
     
