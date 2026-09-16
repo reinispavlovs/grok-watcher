@@ -23,7 +23,7 @@ def analyze_and_filter_noise(targets):
     if not AI_API_KEY:
         return "Kļūda: Nav atrasta AI_API_KEY GitHub Secrets."
 
-    # Pareizais un stabils xAI API galapunkts
+    # Oficiālais un stabilais xAI galapunkts
     url = "https://api.x.ai/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {AI_API_KEY}",
@@ -36,14 +36,16 @@ def analyze_and_filter_noise(targets):
         f"kas uzlabotu mūsu platformu ('{metadata['name']}', mērķis: {metadata['core_objective']})."
     )
     
+    # Izmantojam tavu Grok 4.6 modeli
     payload = {
-        "model": "grok-2",
+        "model": "grok-4.6",
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.5
     }
     
     try:
-        response = requests.post(url, json=payload, headers=headers, timeout=45)
+        # Palielinām taimautu līdz 120 sekundēm, jo spriešanas modelim var būt nepieciešams ilgāks laiks
+        response = requests.post(url, json=payload, headers=headers, timeout=120)
         if response.status_code == 200:
             result_json = response.json()
             return result_json["choices"][0]["message"]["content"]
@@ -69,7 +71,7 @@ if __name__ == "__main__":
     ai_result = analyze_and_filter_noise(targets)
     
     telegram_message = (
-        "🚀 *Project Parallax — Live Watcher Rezultāts*\n\n"
+        "🚀 *Project Parallax — Grok 4.6 Live Watcher*\n\n"
         f"{ai_result}"
     )
     
